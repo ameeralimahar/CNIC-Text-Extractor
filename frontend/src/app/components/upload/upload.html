@@ -1,0 +1,80 @@
+<div class="container">
+  <div class="header">
+    <h2>CNIC Data Extractor</h2>
+    <p>Upload a clear image of a Pakistani CNIC to extract details.</p>
+  </div>
+
+  <div class="upload-section" *ngIf="!extractedData && !isLoading">
+    <div class="file-upload-wrapper">
+      <input type="file" (change)="onFileSelected($event)" accept="image/*" id="file-upload" class="file-input">
+      <label for="file-upload" class="file-label">
+        <span *ngIf="!selectedFile">Choose Image</span>
+        <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
+      </label>
+    </div>
+    
+    <div class="preview-container" *ngIf="imagePreviewUrl">
+        <img [src]="imagePreviewUrl" alt="CNIC Preview" class="preview-image">
+    </div>
+
+    <button (click)="onUpload()" [disabled]="!selectedFile" class="btn-primary">
+      Extract Data
+    </button>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Extracting data from CNIC...</p>
+  </div>
+
+  <div class="error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="results-container" *ngIf="extractedData">
+    <div class="result-columns">
+      <div class="column image-column">
+        <h3>Uploaded Image</h3>
+        <div class="image-wrapper">
+          <img [src]="imagePreviewUrl" alt="Uploaded CNIC">
+        </div>
+      </div>
+      
+      <div class="column data-column">
+        <h3>Extracted Details</h3>
+        <div class="data-grid">
+            <div class="data-row">
+                <span class="label">Name:</span>
+                <span class="value">{{ extractedData.name || 'Not Found' }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Father Name:</span>
+                <span class="value">{{ extractedData.father_name || 'Not Found' }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">CNIC Number:</span>
+                <span class="value">{{ extractedData.cnic_number || 'Not Found' }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Date of Birth:</span>
+                <span class="value">{{ extractedData.dob || 'Not Found' }}</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Gender:</span>
+                <span class="value">{{ extractedData.gender || 'Not Found' }}</span>
+            </div>
+             <div class="data-row">
+                <span class="label">Issue Date:</span>
+                <span class="value">{{ extractedData.issue_date || 'Not Found' }}</span>
+            </div>
+             <div class="data-row">
+                <span class="label">Expiry Date:</span>
+                <span class="value">{{ extractedData.expiry_date || 'Not Found' }}</span>
+            </div>
+        </div>
+        
+        <button (click)="reset()" class="btn-secondary">Upload Another</button>
+      </div>
+    </div>
+  </div>
+</div>

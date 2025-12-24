@@ -1,0 +1,13 @@
+
+# Python
+backend/venv/
+backend/.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node/Angular
+frontend/node_modules/
+frontend/dist/
+.angular/
