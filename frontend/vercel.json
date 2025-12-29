@@ -2,17 +2,17 @@
     "version": 2,
     "builds": [
         {
-            "src": "angular.json",
+            "src": "package.json",
             "use": "@vercel/static-build",
             "config": {
-                "distDir": "dist/cnic-text-extractor"
+                "distDir": "dist/frontend/browser"
             }
         }
     ],
-    "routes": [
+    "rewrites": [
         {
-            "src": "/(.*)",
-            "dest": "/"
+            "source": "/(.*)",
+            "destination": "/index.html"
         }
     ]
 }
