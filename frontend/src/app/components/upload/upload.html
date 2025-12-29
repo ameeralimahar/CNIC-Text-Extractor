@@ -1,79 +1,94 @@
 <div class="container">
   <div class="header">
     <h2>CNIC Data Extractor</h2>
-    <p>Upload a clear image of a Pakistani CNIC to extract details.</p>
+    <p>Upload clear images of Pakistani CNICs to extract details.</p>
   </div>
 
-  <div class="upload-section" *ngIf="!extractedData && !isLoading">
+  <!-- Upload Section (Visible when no items or after reset) -->
+  <div class="upload-section" *ngIf="items.length === 0">
     <div class="file-upload-wrapper">
-      <input type="file" (change)="onFileSelected($event)" accept="image/*" id="file-upload" class="file-input">
+      <input type="file" (change)="onFileSelected($event)" accept="image/*" multiple id="file-upload"
+        class="file-input">
       <label for="file-upload" class="file-label">
-        <span *ngIf="!selectedFile">Choose Image</span>
-        <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
+        <span>Choose Images</span>
       </label>
     </div>
-    
-    <div class="preview-container" *ngIf="imagePreviewUrl">
-        <img [src]="imagePreviewUrl" alt="CNIC Preview" class="preview-image">
+  </div>
+
+  <!-- Main Content Area (Visible when items selected) -->
+  <div class="results-container" *ngIf="items.length > 0">
+
+    <div class="results-header">
+      <button (click)="onUpload()" [disabled]="isProcessing" class="btn-primary"
+        *ngIf="!isProcessing && items[0].status === 'pending'">
+        Start Extraction
+      </button>
+      <div *ngIf="isProcessing || items[0].status === 'completed'" class="status-text">
+        <span *ngIf="isProcessing">Processing...</span>
+        <span *ngIf="!isProcessing">Done</span>
+      </div>
+      <button (click)="reset()" class="btn-secondary" [disabled]="isProcessing">Reset / New Upload</button>
     </div>
 
-    <button (click)="onUpload()" [disabled]="!selectedFile" class="btn-primary">
-      Extract Data
-    </button>
-  </div>
-
-  <div class="loading-state" *ngIf="isLoading">
-    <div class="spinner"></div>
-    <p>Extracting data from CNIC...</p>
-  </div>
-
-  <div class="error-message" *ngIf="errorMessage">
-    {{ errorMessage }}
-  </div>
-
-  <div class="results-container" *ngIf="extractedData">
-    <div class="result-columns">
-      <div class="column image-column">
-        <h3>Uploaded Image</h3>
-        <div class="image-wrapper">
-          <img [src]="imagePreviewUrl" alt="Uploaded CNIC">
+    <div class="results-grid">
+      <div class="result-card" *ngFor="let item of items">
+        <div class="card-header">
+          <h4>{{ item.file.name }}</h4>
         </div>
-      </div>
-      
-      <div class="column data-column">
-        <h3>Extracted Details</h3>
-        <div class="data-grid">
-            <div class="data-row">
-                <span class="label">Name:</span>
-                <span class="value">{{ extractedData.name || 'Not Found' }}</span>
-            </div>
-            <div class="data-row">
-                <span class="label">Father Name:</span>
-                <span class="value">{{ extractedData.father_name || 'Not Found' }}</span>
-            </div>
-            <div class="data-row">
-                <span class="label">CNIC Number:</span>
-                <span class="value">{{ extractedData.cnic_number || 'Not Found' }}</span>
-            </div>
-            <div class="data-row">
-                <span class="label">Date of Birth:</span>
-                <span class="value">{{ extractedData.dob || 'Not Found' }}</span>
-            </div>
-            <div class="data-row">
-                <span class="label">Gender:</span>
-                <span class="value">{{ extractedData.gender || 'Not Found' }}</span>
-            </div>
-             <div class="data-row">
-                <span class="label">Issue Date:</span>
-                <span class="value">{{ extractedData.issue_date || 'Not Found' }}</span>
-            </div>
-             <div class="data-row">
-                <span class="label">Expiry Date:</span>
-                <span class="value">{{ extractedData.expiry_date || 'Not Found' }}</span>
-            </div>
+
+        <div class="card-image-preview">
+          <img [src]="item.previewUrl" alt="CNIC Image" *ngIf="item.previewUrl">
         </div>
-        
-        <button (click)="reset()" class="btn-secondary">Upload Another</button>
+
+        <div class="card-body">
+          <!-- Loading State -->
+          <div class="item-loading" *ngIf="item.status === 'uploading'">
+            <div class="spinner-small"></div>
+            <p>Extracting...</p>
+          </div>
+
+          <!-- Error State -->
+          <div class="item-error" *ngIf="item.status === 'error'">
+            <p>Error: {{ item.error }}</p>
+          </div>
+
+          <!-- Pending State -->
+          <div class="item-pending" *ngIf="item.status === 'pending'">
+            <p>Ready to upload</p>
+          </div>
+
+          <!-- Data State -->
+          <ng-container *ngIf="item.status === 'completed' && item.data">
+            <div class="data-row">
+              <span class="label">Name:</span>
+              <span class="value">{{ item.data.name || 'Not Found' }}</span>
+            </div>
+            <div class="data-row">
+              <span class="label">Father Name:</span>
+              <span class="value">{{ item.data.father_name || 'Not Found' }}</span>
+            </div>
+            <div class="data-row">
+              <span class="label">CNIC:</span>
+              <span class="value">{{ item.data.cnic_number || 'Not Found' }}</span>
+            </div>
+            <div class="data-row">
+              <span class="label">DOB:</span>
+              <span class="value">{{ item.data.dob || 'Not Found' }}</span>
+            </div>
+            <div class="data-row">
+              <span class="label">Gender:</span>
+              <span class="value">{{ item.data.gender || 'Not Found' }}</span>
+            </div>
+            <div class="data-row">
+              <span class="label">Issue:</span>
+              <span class="value">{{ item.data.issue_date || 'Not Found' }}</span>
+            </div>
+            <div class="data-row">
+              <span class="label">Expiry:</span>
+              <span class="value">{{ item.data.expiry_date || 'Not Found' }}</span>
+            </div>
+          </ng-container>
+        </div>
       </div>
     </div>
   </div>

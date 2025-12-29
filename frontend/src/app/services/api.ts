@@ -10,10 +10,18 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  extractCnic(file: File): Observable<any> {
+  extractCnics(files: File[]): Observable<any> {
     const formData = new FormData();
-    formData.append('file', file);
+    files.forEach(file => {
+      formData.append('files', file);
+    });
 
+    return this.http.post<any>(`${this.apiUrl}/extract`, formData);
+  }
+
+  extractSingleCnic(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('files', file); // Backend expects 'files' list, so we send one
     return this.http.post<any>(`${this.apiUrl}/extract`, formData);
   }
 }

@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from typing import List
 from services.bedrock_service import BedrockService
 
 # Load environment variables
@@ -30,26 +31,31 @@ async def health_check():
 
 @app.post("/extract")
 async def extract_cnic_details(
-    file: UploadFile = File(...)
+    files: List[UploadFile] = File(...)
 ):
     """
-    1. Uploads CNIC image.
-    2. Extracts text using Bedrock.
+    1. Uploads multiple CNIC images.
+    2. Extracts text using Bedrock for each.
     """
     try:
-        # Read image file
-        image_bytes = await file.read()
-        
-        # 1. Extract Details
-        extracted_data = bedrock_service.extract_cnic_details(image_bytes)
-        
-        print(f"DEBUG: Extracted Data: {extracted_data}") # Debug Log
+        results = []
+        for file in files:
+            # Read image file
+            image_bytes = await file.read()
+            
+            # 1. Extract Details
+            extracted_data = bedrock_service.extract_cnic_details(image_bytes)
+            
+            # Append result (include filename for reference if needed, or just data)
+            results.append({
+                "filename": file.filename,
+                "data": extracted_data
+            })
+            
+            print(f"DEBUG: Extracted Data for {file.filename}: {extracted_data}")
 
-        if "error" in extracted_data:
-             raise HTTPException(status_code=400, detail=extracted_data["error"])
-        
         return {
-            "extracted_data": extracted_data
+            "results": results
         }
 
     except Exception as e:

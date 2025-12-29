@@ -2,6 +2,14 @@ import { Component, EventEmitter, Output, ChangeDetectorRef } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api';
 
+export interface UploadItem {
+  file: File;
+  previewUrl: string | null;
+  status: 'pending' | 'uploading' | 'completed' | 'error';
+  data: any | null;
+  error?: string;
+}
+
 @Component({
   selector: 'app-upload',
   standalone: true,
@@ -10,11 +18,9 @@ import { ApiService } from '../../services/api';
   styleUrl: './upload.css'
 })
 export class UploadComponent {
-  selectedFile: File | null = null;
-  imagePreviewUrl: string | null = null;
-  extractedData: any | null = null;
-  isLoading = false;
-  errorMessage = '';
+  items: UploadItem[] = [];
+  isProcessing = false;
+  globalError = '';
 
   constructor(
     private apiService: ApiService,
@@ -22,49 +28,74 @@ export class UploadComponent {
   ) { }
 
   onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
-    if (this.selectedFile) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreviewUrl = reader.result as string;
-      };
-      reader.readAsDataURL(this.selectedFile);
-      this.extractedData = null; // Reset previous result
-      this.errorMessage = '';
+    if (event.target.files && event.target.files.length > 0) {
+      const files: File[] = Array.from(event.target.files);
+
+      this.items = files.map(file => ({
+        file: file,
+        previewUrl: null,
+        status: 'pending',
+        data: null
+      }));
+
+      this.items.forEach(item => {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          item.previewUrl = e.target.result;
+          this.cdr.detectChanges();
+        };
+        reader.readAsDataURL(item.file);
+      });
+
+      this.globalError = '';
     }
   }
 
   onUpload() {
-    if (!this.selectedFile) {
-      return;
-    }
+    const pendingItems = this.items.filter(i => i.status === 'pending' || i.status === 'error');
+    if (pendingItems.length === 0) return;
 
-    this.isLoading = true;
-    this.errorMessage = '';
-    this.extractedData = null;
+    this.isProcessing = true;
+    this.globalError = '';
 
-    this.apiService.extractCnic(this.selectedFile).subscribe({
-      next: (response) => {
-        console.log('Backend Response:', response); // Debug Log
-        this.isLoading = false;
-        this.extractedData = response.extracted_data;
-        console.log('Extracted Data Assigned:', this.extractedData); // Debug Log
-        this.cdr.detectChanges(); // Force update
-      },
-      error: (error) => {
-        this.isLoading = false;
-        console.error('Frontend Error:', error); // Debug Log
-        this.errorMessage = error.error?.detail || 'Extraction failed. Please try again.';
-        this.cdr.detectChanges(); // Force update
-      }
+    pendingItems.forEach(item => {
+      item.status = 'uploading';
+      this.cdr.detectChanges();
+
+      this.apiService.extractSingleCnic(item.file).subscribe({
+        next: (response) => {
+          if (response.results && response.results.length > 0) {
+            item.data = response.results[0].data;
+            item.status = 'completed';
+          } else {
+            item.status = 'error';
+            item.error = 'No data returned';
+          }
+          this.checkGlobalStatus();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Item upload error:', err);
+          item.status = 'error';
+          item.error = err.error?.detail || 'Failed';
+          this.checkGlobalStatus();
+          this.cdr.detectChanges();
+        }
+      });
     });
   }
 
+  checkGlobalStatus() {
+    const uploading = this.items.some(i => i.status === 'uploading');
+    if (!uploading) {
+      this.isProcessing = false;
+    }
+  }
+
   reset() {
-    this.selectedFile = null;
-    this.imagePreviewUrl = null;
-    this.extractedData = null;
-    this.errorMessage = '';
+    this.items = [];
+    this.isProcessing = false;
+    this.globalError = '';
     this.cdr.detectChanges();
   }
 }
