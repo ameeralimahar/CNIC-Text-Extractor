@@ -1,0 +1,42 @@
+<div class="results-container" *ngIf="results">
+    <h2>Verification Results</h2>
+
+    <div class="status-banner"
+        [ngClass]="{'verified': results.match_result.overall_match, 'failed': !results.match_result.overall_match}">
+        Status: {{ results.match_result.status }}
+    </div>
+
+    <div class="split-view">
+        <div class="card">
+            <h3>Extracted Data (from Image)</h3>
+            <div class="detail-row">
+                <strong>Ref Name:</strong> {{ results.extracted?.name || 'Not Found' }}
+            </div>
+            <div class="detail-row">
+                <strong>Ref CNIC:</strong> {{ results.extracted?.cnic_number || 'Not Found' }}
+            </div>
+            <div class="detail-row">
+                <strong>Ref DOB:</strong> {{ results.extracted?.dob || 'Not Found' }}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Match Details</h3>
+            <div class="detail-row">
+                <strong>Name Match:</strong>
+                <span [class.match]="results.match_result.details.name.match"
+                    [class.mismatch]="!results.match_result.details.name.match">
+                    {{ results.match_result.details.name.match ? 'YES' : 'NO' }} ({{
+                    results.match_result.details.name.score * 100 }}%)
+                </span>
+            </div>
+            <div class="detail-row">
+                <strong>CNIC Match:</strong>
+                <span [class.match]="results.match_result.details.cnic.match"
+                    [class.mismatch]="!results.match_result.details.cnic.match">
+                    {{ results.match_result.details.cnic.match ? 'YES' : 'NO' }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

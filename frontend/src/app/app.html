@@ -1,0 +1,11 @@
+<div class="app-container">
+  <header>
+  </header>
+
+  <main>
+    <app-upload (verificationComplete)="handleVerification($event)"></app-upload>
+
+    <app-match-results *ngIf="verificationResults" [results]="verificationResults">
+    </app-match-results>
+  </main>
+</div>
