@@ -57,34 +57,34 @@
           </div>
 
           <!-- Data State -->
-          <ng-container *ngIf="item.status === 'completed' && item.data">
+          <ng-container *ngIf="item.status === 'completed'">
             <div class="data-row">
               <span class="label">Name:</span>
-              <span class="value">{{ item.data.name || 'Not Found' }}</span>
+              <span class="value">{{ item.data?.name || 'Not Found' }}</span>
             </div>
             <div class="data-row">
               <span class="label">Father Name:</span>
-              <span class="value">{{ item.data.father_name || 'Not Found' }}</span>
+              <span class="value">{{ item.data?.father_name || 'Not Found' }}</span>
             </div>
             <div class="data-row">
               <span class="label">CNIC:</span>
-              <span class="value">{{ item.data.cnic_number || 'Not Found' }}</span>
+              <span class="value">{{ item.data?.cnic_number || 'Not Found' }}</span>
             </div>
             <div class="data-row">
               <span class="label">DOB:</span>
-              <span class="value">{{ item.data.dob || 'Not Found' }}</span>
+              <span class="value">{{ item.data?.dob || 'Not Found' }}</span>
             </div>
             <div class="data-row">
               <span class="label">Gender:</span>
-              <span class="value">{{ item.data.gender || 'Not Found' }}</span>
+              <span class="value">{{ item.data?.gender || 'Not Found' }}</span>
             </div>
             <div class="data-row">
               <span class="label">Issue:</span>
-              <span class="value">{{ item.data.issue_date || 'Not Found' }}</span>
+              <span class="value">{{ item.data?.issue_date || 'Not Found' }}</span>
             </div>
             <div class="data-row">
               <span class="label">Expiry:</span>
-              <span class="value">{{ item.data.expiry_date || 'Not Found' }}</span>
+              <span class="value">{{ item.data?.expiry_date || 'Not Found' }}</span>
             </div>
           </ng-container>
         </div>

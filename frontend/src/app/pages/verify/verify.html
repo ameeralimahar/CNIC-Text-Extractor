@@ -1,0 +1,97 @@
+<div class="verify-container">
+  <div class="page-header">
+    <h2>Verify Applications</h2>
+    <p>Search by Application ID(s) or CNIC to verify CNIC data against extracted information.</p>
+  </div>
+
+  <app-search-bar (search)="onSearch($event)"></app-search-bar>
+
+  <!-- Loading -->
+  <div class="loading" *ngIf="isSearching">
+    <div class="spinner"></div>
+    <span>Loading...</span>
+  </div>
+
+  <!-- Error -->
+  <div class="error-msg" *ngIf="searchError">{{ searchError }}</div>
+
+  <!-- Search Results -->
+  <div class="search-results" *ngIf="searchResults.length > 0 && !showDetails && verificationResults.length === 0">
+    <div class="results-toolbar">
+      <span class="results-count">{{ searchResults.length }} application(s) found</span>
+      <div class="toolbar-actions">
+        <button class="btn-text" (click)="selectAll()">Select All</button>
+        <button class="btn-text" (click)="deselectAll()">Deselect All</button>
+        <button
+          class="btn-verify"
+          (click)="loadDetails()"
+          [disabled]="selectedIds.size === 0"
+        >
+          Load Details ({{ selectedIds.size }})
+        </button>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+      <app-candidate-card
+        *ngFor="let candidate of searchResults"
+        [candidate]="candidate"
+        [selected]="isSelected(candidate.applicationId)"
+        (selectionChange)="toggleSelection(candidate.applicationId, $event)"
+      ></app-candidate-card>
+    </div>
+  </div>
+
+  <!-- Candidate Details Preview (before verification) -->
+  <div class="details-preview" *ngIf="showDetails && verificationResults.length === 0">
+    <div class="results-toolbar">
+      <span class="results-count">{{ candidateDetails.length }} application(s) loaded</span>
+      <div class="toolbar-actions">
+        <button class="btn-text" (click)="showDetails = false">← Back</button>
+        <button
+          class="btn-verify"
+          (click)="verifyAll()"
+          [disabled]="isVerifying"
+        >
+          {{ isVerifying ? 'Verifying...' : 'Verify All' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="detail-cards">
+      <div class="detail-card" *ngFor="let c of candidateDetails">
+        <div class="detail-card-header">
+          <span class="app-id">App #{{ c.applicationId }}</span>
+          <span class="candidate-name">{{ c.name }}</span>
+        </div>
+        <div class="detail-card-body">
+          <div class="cnic-image-section">
+            <img
+              *ngIf="c.cnicFrontUrl"
+              [src]="getCnicImageUrl(c.cnicFrontUrl)"
+              alt="CNIC Front"
+              class="cnic-image"
+            />
+            <p *ngIf="!c.cnicFrontUrl" class="no-image">No CNIC image available</p>
+          </div>
+          <div class="info-section">
+            <div class="info-row"><span class="lbl">CNIC:</span><span class="val">{{ c.cnic }}</span></div>
+            <div class="info-row"><span class="lbl">Name:</span><span class="val">{{ c.name }}</span></div>
+            <div class="info-row"><span class="lbl">Father/Husband:</span><span class="val">{{ c.fatherName }}</span></div>
+            <div class="info-row"><span class="lbl">Date of Birth:</span><span class="val">{{ c.dob }}</span></div>
+            <div class="info-row"><span class="lbl">Gender:</span><span class="val">{{ c.gender }}</span></div>
+            <div class="info-row"><span class="lbl">Disability:</span><span class="val">{{ c.disability }}</span></div>
+            <div class="info-row"><span class="lbl">Project:</span><span class="val">{{ c.projectName }}</span></div>
+            <div class="info-row"><span class="lbl">Vacancy:</span><span class="val">{{ c.vacancyName }}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Verification Results -->
+  <app-verification-results
+    *ngIf="verificationResults.length > 0"
+    [results]="verificationResults"
+  ></app-verification-results>
+</div>

@@ -1,11 +1,13 @@
 <div class="app-container">
-  <header>
-  </header>
+  <nav class="navbar">
+    <div class="nav-brand">CNIC Extractor</div>
+    <div class="nav-links">
+      <a routerLink="/extract" routerLinkActive="active">Extract</a>
+      <a routerLink="/verify" routerLinkActive="active">Verify Applications</a>
+    </div>
+  </nav>
 
   <main>
-    <app-upload (verificationComplete)="handleVerification($event)"></app-upload>
-
-    <app-match-results *ngIf="verificationResults" [results]="verificationResults">
-    </app-match-results>
+    <router-outlet></router-outlet>
   </main>
 </div>

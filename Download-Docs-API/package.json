@@ -1,0 +1,18 @@
+{
+  "name": "download-document-api",
+  "version": "1.0.0",
+  "description": "Download Documents Portal API - Standalone service for admin portal consumption",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1048.0",
+    "@aws-sdk/s3-request-presigner": "^3.1063.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mssql": "^10.0.2"
+  }
+}

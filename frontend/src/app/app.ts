@@ -1,21 +1,11 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
-import { UploadComponent } from './components/upload/upload';
-import { MatchResultsComponent } from './components/match-results/match-results';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, UploadComponent, MatchResultsComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
-export class AppComponent {
-  title = 'frontend';
-  verificationResults: any = null;
-
-  handleVerification(results: any) {
-    this.verificationResults = results;
-  }
-}
+export class AppComponent {}

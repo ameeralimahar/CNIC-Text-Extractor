@@ -6,3 +6,10 @@ python-dotenv
 pandas
 google-genai
 pillow
+paddlepaddle
+paddleocr
+opencv-python-headless
+redis
+numpy
+ultralytics
+aiohttp

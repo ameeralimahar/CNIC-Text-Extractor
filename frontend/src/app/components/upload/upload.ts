@@ -65,7 +65,7 @@ export class UploadComponent {
       this.apiService.extractSingleCnic(item.file).subscribe({
         next: (response) => {
           if (response.results && response.results.length > 0) {
-            item.data = response.results[0].data;
+            item.data = response.results[0];
             item.status = 'completed';
           } else {
             item.status = 'error';
