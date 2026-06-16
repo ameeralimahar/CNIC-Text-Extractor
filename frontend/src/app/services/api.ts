@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:8000';
+  private apiUrl = environment.backendUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -21,7 +22,7 @@ export class ApiService {
 
   extractSingleCnic(file: File): Observable<any> {
     const formData = new FormData();
-    formData.append('files', file); // Backend expects 'files' list, so we send one
+    formData.append('files', file);
     return this.http.post<any>(`${this.apiUrl}/extract`, formData);
   }
 }

@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - docs-api
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - DOCS_API_URL=http://docs-api:3000
+    depends_on:
+      - docs-api
+
+  docs-api:
+    build: ./Download-Docs-API
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./Download-Docs-API/.env

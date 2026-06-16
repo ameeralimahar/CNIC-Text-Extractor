@@ -1,23 +1,24 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { CandidateSearchResult, CandidateBasicInfo, VerificationResult } from '../models/interfaces';
+import { CandidateSearchResult, CandidateBasicInfo } from '../models/interfaces';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class VerifyApiService {
-  private docsApiUrl = 'http://localhost:3000';
-  private backendUrl = 'http://localhost:8000';
+  private docsApiUrl = environment.docsApiUrl;
+  private backendUrl = environment.backendUrl;
 
   constructor(private http: HttpClient) {}
 
   searchApplications(query: string): Observable<CandidateSearchResult[]> {
-    return this.http.get<CandidateSearchResult[]>(`${this.docsApiUrl}/api/search/${query}`);
+    return this.http.get<CandidateSearchResult[]>(`${this.docsApiUrl}/search/${query}`);
   }
 
   getCandidateDetails(formId: string): Observable<CandidateBasicInfo> {
-    return this.http.get<any>(`${this.docsApiUrl}/api/candidate/${formId}`).pipe(
+    return this.http.get<any>(`${this.docsApiUrl}/candidate/${formId}`).pipe(
       map((res) => ({
         applicationId: res.applicationId,
         projectName: res.projectName,

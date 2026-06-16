@@ -1,10 +1,13 @@
 import asyncio
+import os
 import aiohttp
 from typing import List, Dict, Any
 from services.vision_llm_service import VisionLLMService
 
 # Semaphore to limit concurrent LLM calls (avoid rate limits)
 LLM_SEMAPHORE = asyncio.Semaphore(2)
+
+DOCS_API_URL = os.getenv("DOCS_API_URL", "http://localhost:3000")
 
 
 class VerifyService:
@@ -57,7 +60,7 @@ class VerifyService:
         try:
             # If URL is relative, prepend the docs API base URL
             if url.startswith("/"):
-                url = f"http://localhost:3000{url}"
+                url = f"{DOCS_API_URL}{url}"
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as resp:
                     if resp.status == 200:

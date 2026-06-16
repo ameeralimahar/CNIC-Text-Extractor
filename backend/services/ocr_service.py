@@ -1,26 +1,30 @@
-from paddleocr import PaddleOCR
 import numpy as np
-import os
+
+try:
+    from paddleocr import PaddleOCR
+    PADDLE_AVAILABLE = True
+except ImportError:
+    PADDLE_AVAILABLE = False
+
 
 class OCRService:
     def __init__(self):
-        # Initialize PaddleOCR
-        # lang='ur' handles both Urdu and basic English chars effectively in PaddleOCR
-        # Check environment variable for GPU usage
-        use_gpu = os.getenv("USE_GPU", "false").lower() == "true"
-        print(f"Initializing PaddleOCR (GPU enabled: {use_gpu})... Note: PaddleOCR now manages GPU automatically or via paddle installation.")
-        self.ocr = PaddleOCR(use_angle_cls=True, lang='ur')
+        if PADDLE_AVAILABLE:
+            print("Initializing PaddleOCR...")
+            self.ocr = PaddleOCR(use_angle_cls=True, lang='ur')
+        else:
+            print("WARNING: PaddleOCR not available. OCR disabled, using Vision LLM fallback.")
+            self.ocr = None
 
     def extract_text(self, cv_image: np.ndarray) -> tuple[list[str], float]:
-        """
-        Runs PaddleOCR on the image.
-        Returns a tuple of (extracted_lines, average_confidence)
-        """
+        if not self.ocr:
+            return [], 0.0
+
         result = self.ocr.ocr(cv_image)
-        
+
         extracted_lines = []
         confidences = []
-        
+
         if not result or not result[0]:
             return [], 0.0
 
@@ -30,6 +34,6 @@ class OCRService:
             confidence = res[1][1]
             extracted_lines.append(text)
             confidences.append(confidence)
-            
+
         avg_confidence = sum(confidences) / len(confidences) if confidences else 0.0
         return extracted_lines, avg_confidence
