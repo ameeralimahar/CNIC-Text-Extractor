@@ -12,6 +12,7 @@ app.use(express.json());
 app.use('/api/image', require('./routes/image'));
 app.use('/api/search', require('./routes/search'));
 app.use('/api/candidate', require('./routes/candidate'));
+app.use('/api/candidate-lite', require('./routes/candidate-lite'));
 
 app.get('/', (req, res) => {
   res.json({

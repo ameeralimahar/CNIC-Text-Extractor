@@ -18,7 +18,7 @@ export class VerifyApiService {
   }
 
   getCandidateDetails(formId: string): Observable<CandidateBasicInfo> {
-    return this.http.get<any>(`${this.docsApiUrl}/candidate/${formId}`).pipe(
+    return this.http.get<any>(`${this.docsApiUrl}/candidate-lite/${formId}`).pipe(
       map((res) => ({
         applicationId: res.applicationId,
         projectName: res.projectName,
